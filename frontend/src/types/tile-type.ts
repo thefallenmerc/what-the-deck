@@ -1,6 +1,12 @@
 export type TileType = {
-    icon: string;
-    label: string;
+    id: string;
     name: string;
     category: string;
+    config: TileConfig;
+}
+
+export type TileConfig = {
+    title?: string,
+    appLocation?: string,
+    appArguments?: string,
 }

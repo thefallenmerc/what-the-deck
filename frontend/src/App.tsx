@@ -1,6 +1,4 @@
 import { DragEventHandler, useEffect, useRef, useState } from 'react';
-import { Music, Play, Pause, SkipForward, SkipBack, Laptop, Volume2, VolumeX, Mic, Video, Image, Folder, Settings, Power, Headphones, Monitor, Speaker } from 'lucide-react'
-import './App.css';
 import { GetTiles, SaveTiles, OpenFileDialog } from "../wailsjs/go/main/App";
 import { Button } from "@/components/ui/button"
 import {
@@ -9,33 +7,14 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import TileConfiguration from './components/views/tile-configuration.view';
-import { TileType } from './types/tile-type';
+import { TileConfig, TileType } from './types/tile-type';
+import { TileIcon } from './components/views/tile-icon.view';
+import { Tile } from './components/views/tile.view';
 
-function getIcon(name: string) {
-    const icons = {
-        'play-pause': <Play className="w-6 h-6" />,
-        'next': <SkipForward className="w-6 h-6" />,
-        'prev': <SkipBack className="w-6 h-6" />,
-        'volume-up': <Volume2 className="w-6 h-6" />,
-        'volume-down': <VolumeX className="w-6 h-6" />,
-        'mic': <Mic className="w-6 h-6" />,
-        'headphones': <Headphones className="w-6 h-6" />,
-        'speaker': <Speaker className="w-6 h-6" />,
-        'music': <Music className="w-6 h-6" />,
-        'app': <Laptop className="w-6 h-6" />,
-        'video': <Video className="w-6 h-6" />,
-        'screenshot': <Image className="w-6 h-6" />,
-        'folder': <Folder className="w-6 h-6" />,
-        'settings': <Settings className="w-6 h-6" />,
-        'power': <Power className="w-6 h-6" />,
-        'monitor': <Monitor className="w-6 h-6" />,
-    };
-
-    return (icons as any)[name] as React.ReactNode;
-}
+import './App.css';
 
 // Available actions grouped by category
 const availableActions = {
@@ -47,21 +26,21 @@ const availableActions = {
         { id: 'volume-down', name: 'Volume Down' },
     ],
     "Audio": [
-        { id: 'mic', name: 'Toggle Mic' },
-        { id: 'headphones', name: 'Toggle Headphones' },
-        { id: 'speaker', name: 'Toggle Speaker' },
+        { id: 'mic', name: 'Toggle Mic', disabled: true },
+        { id: 'headphones', name: 'Toggle Headphones', disabled: true },
+        { id: 'speaker', name: 'Toggle Speaker', disabled: true },
     ],
     "Applications": [
-        { id: 'music', name: 'Open Music App' },
+        { id: 'music', name: 'Open Music App', disabled: true },
         { id: 'app', name: 'Open App' },
-        { id: 'video', name: 'Open Video App' },
+        { id: 'video', name: 'Open Video App', disabled: true },
     ],
     "System": [
-        { id: 'screenshot', name: 'Take Screenshot' },
-        { id: 'folder', name: 'Open Folder' },
-        { id: 'settings', name: 'Open Settings' },
-        { id: 'power', name: 'Power Options' },
-        { id: 'monitor', name: 'Switch Display' },
+        { id: 'screenshot', name: 'Take Screenshot', disabled: true },
+        { id: 'folder', name: 'Open Folder', disabled: true },
+        { id: 'settings', name: 'Open Settings', disabled: true },
+        { id: 'power', name: 'Power Options', disabled: true },
+        { id: 'monitor', name: 'Switch Display', disabled: true },
     ],
 }
 
@@ -173,6 +152,17 @@ function App() {
         e.preventDefault();
     }
 
+    const updateConfiguration = (tileId: string, newConfig: TileConfig) => {
+        const targetIndex = tiles.findIndex(t => t?.id === tileId);
+        if (targetIndex > -1) {
+            const newTiles = [...tiles]
+            const newTile = newTiles[targetIndex];
+            newTiles[targetIndex] = { ...newTile, config: newConfig };
+            setTiles(newTiles);
+            saveTiles(newTiles);
+        }
+    }
+
     return (
         <div id="App" className="flex">
             <div className="flex-grow h-screen flex flex-col">
@@ -182,17 +172,12 @@ function App() {
                             tiles.map((tile, index) => (
                                 <Tooltip key={index}>
                                     <TooltipTrigger asChild>
-                                        <div
-                                            key={index}
-                                            className="w-[72px] aspect-square border-2 border-zinc-500 bg-zinc-800 flex-grow-0 flex-shrink-0 rounded-2xl transition transform active:scale-90 active:border-blue-500 cursor-pointer flex items-center justify-center"
-                                            draggable
+                                        <Tile
+                                            tile={tile}
                                             onDragStart={(e) => onDragStart(e, 'tile', index)}
                                             onDrop={(e) => onDrop(e, index)}
-                                            onDragOver={allowDrop}
-                                            onClick={() => handleTileClick(index)}
-                                        >
-                                            <div className="w-full justify-center flex">{tile ? getIcon(tile.id) : ""}</div>
-                                        </div>
+                                            allowDrop={allowDrop}
+                                            onClick={() => handleTileClick(index)} />
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>{tile ? tile.name : 'Empty Tile'}</p>
@@ -205,13 +190,18 @@ function App() {
                 {/* details tab */}
                 <div className="flex-shrink-0 h-[320px] border-t border-gray-900">
                     {
-                        selectedTile || selectedTile === 0 ? <TileConfiguration tile={tiles[selectedTile]} /> : <></>
+                        selectedTile || selectedTile === 0
+                            ? <TileConfiguration
+                                key={selectedTile}
+                                tile={tiles[selectedTile]}
+                                updateConfiguration={updateConfiguration} />
+                            : <></>
                     }
                 </div>
             </div>
             {/* sidebar */}
             <div className="flex-shrink-0 block w-[270px] border-l border-gray-900 h-screen overflow-y-auto overflow-x-hidden">
-                <Accordion type="multiple" className="w-full">
+                <Accordion type="multiple" className="w-full" defaultValue={Object.keys(availableActions)}>
                     {
                         Object.entries(availableActions).map(([category, actions]) => (
                             <AccordionItem value={category} key={category}>
@@ -225,7 +215,7 @@ function App() {
                                                 onDragOver={allowDrop}
                                                 onDrop={onDropToSidebar}
                                                 draggable>
-                                                {getIcon(action.id)}
+                                                <TileIcon icon={action.id} />
                                                 <span className="ml-2 text-sm">{action.name}</span>
                                             </div>
                                         ))
