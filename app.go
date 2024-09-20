@@ -30,7 +30,7 @@ func (a *App) Greet(name string) string {
 }
 
 func (a *App) SaveTiles(stringifiedTiles string) error {
-	filePath := "tiles.txt"
+	filePath := "tiles.json"
 
 	// Write to a file
 	err := os.WriteFile(filePath, []byte(stringifiedTiles), 0644)
@@ -42,7 +42,7 @@ func (a *App) SaveTiles(stringifiedTiles string) error {
 }
 
 func (a *App) GetTiles() string {
-	filePath := "tiles.txt"
+	filePath := "tiles.json"
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Errorf("failed to write to file: %v", err)
