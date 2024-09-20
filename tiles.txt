@@ -1,0 +1,21 @@
+[
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  {
+    "id": "play-pause",
+    "name": "Play / Pause",
+    "category": "Media Controls"
+  },
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+]
