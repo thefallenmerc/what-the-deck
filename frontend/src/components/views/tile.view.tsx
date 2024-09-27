@@ -9,18 +9,20 @@ export function Tile({
     onDrop,
     allowDrop,
     onClick,
+    size = 72
 }: {
     tile: TileType,
-    onDragStart: (e: React.DragEvent) => void,
-    onDrop: (e: React.DragEvent) => void,
-    allowDrop: (e: React.DragEvent<HTMLDivElement>) => void,
+    onDragStart?: (e: React.DragEvent) => void,
+    onDrop?: (e: React.DragEvent) => void,
+    allowDrop?: (e: React.DragEvent<HTMLDivElement>) => void,
     onClick: () => void,
+    size?: number,
 }) {
     return (
         <Tooltip>
             <TooltipTrigger asChild>
                 <div
-                    className="w-[72px] aspect-square border-2 border-zinc-500 bg-zinc-800 flex-grow-0 flex-shrink-0 rounded-2xl transition transform active:scale-90 active:border-blue-500 cursor-pointer flex items-center justify-center relative"
+                    className={`w-24 aspect-square border-2 border-zinc-500 bg-zinc-800 flex-grow-0 flex-shrink-0 rounded-2xl transition duration-75 transform active:scale-90 active:border-blue-500 cursor-pointer flex items-center justify-center relative`}
                     draggable
                     onDragStart={onDragStart}
                     onDrop={onDrop}
@@ -28,7 +30,7 @@ export function Tile({
                     onClick={onClick}
                 >
                     <div className="w-full justify-center items-center flex flex-col">
-                        {tile ? <TileIcon icon={tile.id} /> : ""}
+                        {tile ? <TileIcon icon={tile.id} size={36} /> : ""}
                         {tile?.config?.title ? <div className="text-xs absolute bottom-1">{tile.config.title}</div> : ""}
                     </div>
                 </div>

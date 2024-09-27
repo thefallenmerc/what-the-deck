@@ -7,7 +7,7 @@ html {
     color: white;
 }
 
-body {
+body, .ClientUI {
     margin: 0;
     color: white;
     background-color: rgba(48, 48, 54, 1);

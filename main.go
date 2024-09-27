@@ -2,6 +2,9 @@ package main
 
 import (
 	"embed"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -12,6 +15,12 @@ import (
 var assets embed.FS
 
 func main() {
+	// check if isDev by removing extension and cehcking if the build ends with dev
+	isDev := strings.HasSuffix(strings.TrimSuffix(os.Args[0], filepath.Ext(os.Args[0])), "dev")
+
+	// start webserver concurrently
+	go StartServer(isDev)
+
 	// Create an instance of the app structure
 	app := NewApp()
 

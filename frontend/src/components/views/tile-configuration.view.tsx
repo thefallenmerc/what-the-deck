@@ -6,11 +6,13 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { OpenFileDialog } from '../../../wailsjs/go/main/App'
 
 export default function TileConfiguration({
+  index,
   tile,
   updateConfiguration,
 }: {
+  index: number,
   tile: TileType,
-  updateConfiguration: (tileId: string, newConfig: TileConfig) => void,
+  updateConfiguration: (index: number, newConfig: TileConfig) => void,
 }) {
 
   return (
@@ -42,7 +44,7 @@ export default function TileConfiguration({
                   <Input className="" value={tile.config?.title} onChange={e => {
                     const newConfig = { ...(tile.config ?? {}) };
                     newConfig["title"] = e.target.value;
-                    updateConfiguration(tile.id, newConfig)
+                    updateConfiguration(index, newConfig)
                   }} />
                 </div>
                 {/* open/focus app */}
@@ -57,7 +59,7 @@ export default function TileConfiguration({
                             <Input className="" value={tile.config?.appLocation} onChange={e => {
                               const newConfig = { ...(tile.config ?? {}) };
                               newConfig["appLocation"] = e.target.value;
-                              updateConfiguration(tile.id, newConfig)
+                              updateConfiguration(index, newConfig)
                             }} />
                           </TooltipTrigger>
                           <TooltipContent>
@@ -71,7 +73,7 @@ export default function TileConfiguration({
                             if (location) {
                               const newConfig = { ...(tile.config ?? {}) };
                               newConfig["appLocation"] = location;
-                              updateConfiguration(tile.id, newConfig)
+                              updateConfiguration(index, newConfig)
                             }
                           }}>
                           <TileIcon icon="file" size={4} />
@@ -85,7 +87,7 @@ export default function TileConfiguration({
                             <Input className="" value={tile.config?.appArguments} onChange={e => {
                               const newConfig = { ...(tile.config ?? {}) };
                               newConfig["appArguments"] = e.target.value;
-                              updateConfiguration(tile.id, newConfig)
+                              updateConfiguration(index, newConfig)
                             }} />
                           </TooltipTrigger>
                           <TooltipContent>
@@ -94,6 +96,19 @@ export default function TileConfiguration({
                         </Tooltip>
                       </div>
                     </>
+                  ) : <></>
+                }
+                {/* web */}
+                {
+                  tile.id === "web" ? (
+                    <div className="flex items-center gap-4 w-full justify-end pb-4">
+                      <label className="text-foreground w-[150px] text-left">Launch URL:</label>
+                      <Input className="" value={tile.config?.launchUrl} onChange={e => {
+                        const newConfig = { ...(tile.config ?? {}) };
+                        newConfig["launchUrl"] = e.target.value;
+                        updateConfiguration(index, newConfig)
+                      }} />
+                    </div>
                   ) : <></>
                 }
               </div>
