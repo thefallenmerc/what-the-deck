@@ -6,7 +6,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
+	"what-the-deck/actions"
 )
 
 // Handler to return file content as JSON
@@ -46,6 +48,40 @@ func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
 
+func getVolumeHandler(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+
+	volume, err := actions.GetVolume()
+	// if error return json response
+	if err != nil {
+		// set status to 500 and return json response
+		http.Error(w, "Error getting volume", http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "level": volume})
+}
+
+func volumeHandler(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+
+	// get volume from request path
+	volume := r.URL.Path[len("/api/volume/"):]
+	convertedVolume, err := strconv.Atoi(volume)
+	if err != nil {
+		http.Error(w, "Invalid volume", http.StatusBadRequest)
+		return
+	}
+	// return success json response
+	w.Header().Set("Content-Type", "application/json")
+	err = actions.SetVolume(convertedVolume)
+	if err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": err.Error()})
+		return
+	}
+	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "level": convertedVolume})
+
+}
+
 func StartServer(isDev bool) {
 
 	// Define the directory to serve
@@ -62,6 +98,8 @@ func StartServer(isDev bool) {
 	// api routes
 	http.HandleFunc("/api/tiles", fetchTilesHandler) // New route to serve file content
 	http.HandleFunc("/api/action/", ActionHandler)
+	http.HandleFunc("/api/volume", getVolumeHandler)
+	http.HandleFunc("/api/volume/", volumeHandler)
 
 	// Wait for 2 seconds before starting the server
 	time.Sleep(2 * time.Second)

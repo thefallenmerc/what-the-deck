@@ -13,6 +13,7 @@ import TileConfiguration from '@/components/views/tile-configuration.view';
 import { TileConfig, TileType } from '@/types/tile-type';
 import { TileIcon } from '@/components/views/tile-icon.view';
 import { Tile } from '@/components/views/tile.view';
+import { VerticalSlider } from '@/components/ui/vertical-slider';
 
 // Available actions grouped by category
 const availableActions = {
@@ -170,6 +171,14 @@ function ServerUI() {
         <div className="flex">
             <div className="flex-grow h-screen flex flex-col">
                 <div className="flex-grow flex items-center justify-center">
+                    <div className="slider relative flex pr-8 pl-4">
+                        <VerticalSlider
+                            defaultValue={[50]}
+                            max={100}
+                            step={1}
+                            className="relative flex h-48 w-4 touch-none select-none"
+                            onValueCommit={(value) => console.log(value)} />
+                    </div>
                     <div className="grid grid-cols-5 gap-4">
                         {
                             tiles.map((tile, index) => (
