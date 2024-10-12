@@ -131,6 +131,7 @@ function ServerUI() {
         setTiles(newTiles)
         setSelectedTile(null)
         draggedItem.current = null
+        saveTiles(newTiles);
     }
 
     const handleConfirmReplace = () => {
