@@ -27,9 +27,9 @@ func main() {
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:     "What the deck",
-		Width:     856,
+		Width:     936,
 		Height:    768,
-		MinWidth:  856,
+		MinWidth:  936,
 		MinHeight: 768,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
