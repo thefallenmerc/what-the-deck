@@ -11,6 +11,7 @@ import (
 )
 
 func ActionHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	// Extract the postid from the URL path
 	// URL path should look like /post/{postid}
 	urlPathSegments := strings.Split(r.URL.Path, "/")

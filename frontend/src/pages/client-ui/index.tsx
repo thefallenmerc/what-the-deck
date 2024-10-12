@@ -46,6 +46,10 @@ export function ClientUI() {
 
     async function executeTile(index: number) {
         await fetch(import.meta.env.VITE_API_URL + `/api/action/${index}/execute`);
+        // if event is volume up or down or mute, then fetch volume
+        if (tiles[index].id === "volume-up" || tiles[index].id === "volume-down" || tiles[index].id === "volume-mute") {
+            await fetchVolume();
+        }
     }
 
     async function handleTileClick(index: number) {
