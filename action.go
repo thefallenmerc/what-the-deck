@@ -98,5 +98,7 @@ func ExecuteAction(item *Item) {
 		actions.MaximizeActiveWindow()
 	case "close":
 		actions.CloseActiveWindow()
+	case "screenshot":
+		actions.SaveCombinedScreenShot()
 	}
 }
