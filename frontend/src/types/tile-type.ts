@@ -10,4 +10,6 @@ export type TileConfig = {
     appLocation?: string,
     appArguments?: string,
     launchUrl?: string,
+    action?: string,
+    confirmFirst?: boolean,
 }

@@ -2,17 +2,31 @@ import React, { useEffect, useState } from 'react';
 
 // shadcn
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 // views
 import { Tile } from '@/components/views/tile.view';
 import { TileType } from '@/types/tile-type';
 import { VerticalSlider } from '@/components/ui/vertical-slider';
+import { ExpandIcon, XIcon } from 'lucide-react';
+import { CheckIcon } from '@radix-ui/react-icons';
 
 export function ClientUI() {
     // states
     const [tiles, setTiles] = useState<TileType[]>(Array(15).fill(null))
     const [volume, setVolume] = useState<number>(0);
-
+    const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
+    const [confirmIndex, setConfirmIndex] = useState<number>(-1);
     useEffect(() => {
         fetchTiles();
         fetchVolume();
@@ -35,13 +49,19 @@ export function ClientUI() {
     }
 
     async function handleTileClick(index: number) {
-        executeTile(index);
+        // check if confirm first is true
+        if (tiles[index].config?.confirmFirst) {
+            // show confirm dialog
+            setConfirmOpen(true);
+            setConfirmIndex(index);
+        } else {
+            executeTile(index);
+        }
     }
 
     async function toggleFullscreen(e: React.MouseEvent<HTMLDivElement>) {
-
         if (!document.fullscreenElement) {
-            e.currentTarget.requestFullscreen().catch(err => {
+            document.documentElement?.requestFullscreen().catch(err => {
                 console.error(`Error attempting to enable full-screen mode: ${err.message}`);
             });
         } else {
@@ -54,8 +74,11 @@ export function ClientUI() {
     }
 
     return (
-        <div className="ClientUI flex h-screen items-center justify-center" onClick={toggleFullscreen}>
-            <div className="slider flex pr-8 pl-4">
+        <div id="client-ui" className="ClientUI flex h-screen items-center justify-center">
+            <div className="slider flex flex-col gap-4 items-center pr-8 pl-4">
+                <div className="flex items-center" onClick={toggleFullscreen}>
+                    <ExpandIcon className="w-6 h-6 cursor-pointer text-background" />
+                </div>
                 <VerticalSlider
                     key={volume}
                     defaultValue={[volume]}
@@ -72,10 +95,31 @@ export function ClientUI() {
                             key={index}
                             tile={tile}
                             onClick={() => handleTileClick(index)}
-                            size={120} />
+                            size={28} />
                     ))
                 }
             </div>
+            {/* confirm dialog */}
+            <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-4xl text-center">Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-3xl text-center py-4">
+                            This will execute the action.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="flex flex-row gap-4 w-full justify-center sm:justify-center">
+                        <AlertDialogCancel className="h-24 w-24 text-xl">
+                            <XIcon className="w-12 h-12" />
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            className="h-24 w-24 text-xl"
+                            onClick={() => executeTile(confirmIndex)}>
+                            <CheckIcon className="w-12 h-12" />
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

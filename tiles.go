@@ -12,6 +12,8 @@ type Config struct {
 	AppLocation  *string `json:"appLocation,omitempty"`
 	AppArguments *string `json:"appArguments,omitempty"`
 	LaunchUrl    *string `json:"launchUrl,omitempty"`
+	Action       *string `json:"action,omitempty"`
+	ConfirmFirst *bool   `json:"confirmFirst,omitempty"`
 }
 
 // Item represents a non-null item in the array

@@ -6,10 +6,22 @@ import (
 	"image/draw"
 	"image/png"
 	"os"
+	"os/exec"
 	"time"
 
 	"github.com/kbinani/screenshot"
 )
+
+func PowerAction(action string) {
+	switch action {
+	case "shutdown":
+		exec.Command("shutdown", "/s", "/t", "0").Run()
+	case "restart":
+		exec.Command("shutdown", "/r", "/t", "0").Run()
+	case "sleep":
+		exec.Command("rundll32.exe", "powrprof.dll,SetSuspendState", "0", "1", "0").Run()
+	}
+}
 
 // Not being used anymore
 // SaveScreenShot saves a screenshot of each active display

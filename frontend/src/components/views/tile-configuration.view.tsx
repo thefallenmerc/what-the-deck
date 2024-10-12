@@ -4,6 +4,9 @@ import { Tile } from './tile.view'
 import { Input } from '../ui/input'
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { OpenFileDialog } from '../../../wailsjs/go/main/App'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/select'
+import { SelectValue } from '@radix-ui/react-select'
+import { Switch } from '../ui/switch'
 
 export default function TileConfiguration({
   index,
@@ -111,6 +114,37 @@ export default function TileConfiguration({
                     </div>
                   ) : <></>
                 }
+                {/* power */}
+                {
+                  tile.id === "power" ? (
+                    <div className="flex items-center gap-4 w-full justify-end pb-4">
+                      <label className="text-foreground w-[150px] text-left">Action:</label>
+                      <Select value={tile.config?.action ?? ""} onValueChange={value => {
+                        const newConfig = { ...(tile.config ?? {}) };
+                        newConfig["action"] = value;
+                        updateConfiguration(index, newConfig)
+                      }}>
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Shutdown Action" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="shutdown">Shutdown</SelectItem>
+                          <SelectItem value="restart">Restart</SelectItem>
+                          <SelectItem value="sleep">Sleep</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ) : <></>
+                }
+                {/* confirm */}
+                <div className="flex items-center gap-4 w-full justify-end pb-4">
+                  <label className="text-foreground w-[150px] text-left cursor-pointer" htmlFor="confirm">Confirm First:</label>
+                  <Switch id="confirm" checked={tile.config?.confirmFirst ?? false} onCheckedChange={checked => {
+                    const newConfig = { ...(tile.config ?? {}) };
+                    newConfig["confirmFirst"] = checked;
+                    updateConfiguration(index, newConfig)
+                  }} />
+                </div>
               </div>
             </div>
           </div>

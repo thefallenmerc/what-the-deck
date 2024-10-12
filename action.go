@@ -100,5 +100,11 @@ func ExecuteAction(item *Item) {
 		actions.CloseActiveWindow()
 	case "screenshot":
 		actions.SaveCombinedScreenShot()
+	case "power":
+		if item.Config != nil {
+			actions.PowerAction(*item.Config.Action)
+		}
+	default:
+		fmt.Println("No action found for", item.ID)
 	}
 }
